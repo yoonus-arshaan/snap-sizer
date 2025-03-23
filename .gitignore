@@ -1,0 +1,34 @@
+# Build directories
+/dist/
+/build/
+
+# Temporary files from text editors
+/.idea/
+/.vscode/
+/*.sublime-workspace
+/*.sublime-project
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Images or icons that doesn't need to be included
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.ico
+
+# IDE specific
+*.iml
+
+# Webpack output
+/webpack-stats.json

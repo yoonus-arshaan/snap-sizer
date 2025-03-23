@@ -32,6 +32,132 @@
                     <input type="file" id="image-upload" accept="image/*" hidden multiple>
                 </div>
             </section>
+            <section class="controls-section" id="controls-section">
+                <div class="tabs">
+                    <button class="tab-button active" data-tab="resize">Resize</button>
+                    <button class="tab-button" data-tab="enhance">Enhance</button>
+                    <button class="tab-button" data-tab="format">Format</button>
+                    <button class="tab-button" data-tab="metadata">Metadata</button>
+                </div>
+                
+                <div class="tab-content active" id="resize-tab">
+                    <div class="control-group">
+                        <label for="width-input">Width</label>
+                        <div class="input-container">
+                            <input type="number" id="width-input" min="1" placeholder="Enter width">
+                            <span class="unit">px</span>
+                        </div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="quality-slider">Quality <span id="quality-value">80%</span></label>
+                        <input type="range" id="quality-slider" min="1" max="100" value="80" class="slider">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Aspect Ratio</label>
+                        <div class="aspect-ratio-buttons">
+                            <button class="aspect-button active" data-ratio="original">Original</button>
+                            <button class="aspect-button" data-ratio="1:1">1:1</button>
+                            <button class="aspect-button" data-ratio="4:3">4:3</button>
+                            <button class="aspect-button" data-ratio="16:9">16:9</button>
+                            <button class="aspect-button" data-ratio="custom">Custom</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="enhance-tab">
+                    <div class="control-group">
+                        <label for="brightness-slider">Brightness <span id="brightness-value">0</span></label>
+                        <input type="range" id="brightness-slider" min="-100" max="100" value="0" class="slider">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="contrast-slider">Contrast <span id="contrast-value">0</span></label>
+                        <input type="range" id="contrast-slider" min="-100" max="100" value="0" class="slider">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="saturation-slider">Saturation <span id="saturation-value">0</span></label>
+                        <input type="range" id="saturation-slider" min="-100" max="100" value="0" class="slider">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Filters</label>
+                        <div class="filter-buttons">
+                            <button class="filter-button active" data-filter="none">None</button>
+                            <button class="filter-button" data-filter="grayscale">B&W</button>
+                            <button class="filter-button" data-filter="sepia">Sepia</button>
+                            <button class="filter-button" data-filter="vintage">Vintage</button>
+                            <button class="filter-button" data-filter="clarity">Clarity</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="format-tab">
+                    <div class="control-group">
+                        <label>Output Format</label>
+                        <div class="format-buttons">
+                            <button class="format-button active" data-format="jpeg">JPEG</button>
+                            <button class="format-button" data-format="png">PNG</button>
+                            <button class="format-button" data-format="webp">WebP</button>
+                        </div>
+                    </div>
+                    
+                    <div class="format-info">
+                        <h4>Format Comparison</h4>
+                        <div class="format-comparison">
+                            <div class="format-item">
+                                <span class="format-name">JPEG</span>
+                                <span class="format-desc">Best for photos</span>
+                                <span class="format-size" id="jpeg-size">-</span>
+                            </div>
+                            <div class="format-item">
+                                <span class="format-name">PNG</span>
+                                <span class="format-desc">Best for transparency</span>
+                                <span class="format-size" id="png-size">-</span>
+                            </div>
+                            <div class="format-item">
+                                <span class="format-name">WebP</span>
+                                <span class="format-desc">Best overall compression</span>
+                                <span class="format-size" id="webp-size">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="metadata-tab">
+                    <div class="control-group">
+                        <label>EXIF Data</label>
+                        <div class="metadata-toggle">
+                            <label class="switch">
+                                <input type="checkbox" id="preserve-metadata" checked>
+                                <span class="switch-slider"></span>
+                            </label>
+                            <span>Preserve metadata</span>
+                        </div>
+                    </div>
+                    
+                    <div class="metadata-info" id="metadata-info">
+                        <p class="no-metadata">Upload an image to view metadata</p>
+                    </div>
+                </div>
+                
+                <div class="batch-processing">
+                    <div class="batch-toggle">
+                        <label class="switch">
+                            <input type="checkbox" id="batch-mode">
+                            <span class="switch-slider"></span>
+                        </label>
+                        <span>Batch processing</span>
+                    </div>
+                    <div class="batch-info" id="batch-info">
+                        <span>0 images selected</span>
+                    </div>
+                </div>
+                
+                <button id="resize-button" class="primary-button">Optimize</button>
+            </section>
         </main>
     </div>
 </body>

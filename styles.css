@@ -66,4 +66,23 @@ body::before {
     flex-direction: column;
     min-height: 100vh;
 }
+
+/* Header styles */
+header {
+    text-align: center;
+    padding: 2rem 0;
+    position: relative;
+}
+  
+header::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: var(--gradient-accent);
+    border-radius: 2px;
+}
   

@@ -57,8 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
       saturation: 0,
     }
 
-     // Initialize tabs
-     tabButtons.forEach((button) => {
+    // Initialize tabs
+    tabButtons.forEach((button) => {
         button.addEventListener("click", () => {
           // Remove active class from all buttons and contents
           tabButtons.forEach((btn) => {
@@ -73,5 +73,46 @@ document.addEventListener("DOMContentLoaded", () => {
           const tabId = button.getAttribute("data-tab") + "-tab"
           document.getElementById(tabId).classList.add("active")
         })
-      })
+    })
+
+    
+    // Initialize aspect ratio buttons
+    aspectButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          aspectButtons.forEach((btn) => btn.classList.remove("active"))
+          button.classList.add("active")
+          selectedAspectRatio = button.getAttribute("data-ratio")
+    
+          if (originalImage) {
+            updateAspectRatio()
+          }
+        })
+    })
+    
+      // Initialize filter buttons
+      filterButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          filterButtons.forEach((btn) => btn.classList.remove("active"))
+          button.classList.add("active")
+          selectedFilter = button.getAttribute("data-filter")
+    
+          if (originalImage) {
+            applyEnhancements()
+          }
+        })
+    })
+    
+      // Initialize format buttons
+      formatButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          formatButtons.forEach((btn) => btn.classList.remove("active"))
+          button.classList.add("active")
+          selectedFormat = button.getAttribute("data-format")
+    
+          if (originalImage) {
+            updateFormatComparison()
+          }
+        })
+    })
+
 })

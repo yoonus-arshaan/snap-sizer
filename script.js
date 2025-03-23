@@ -707,4 +707,29 @@ document.addEventListener("DOMContentLoaded", () => {
         })
       }
 
+    // Function to extract metadata
+    function extractMetadata(file) {
+        if (!file) return
+    
+        // Basic file metadata
+        const basicMetadata = {
+          "File Name": file.name,
+          "File Type": file.type,
+          "File Size": formatFileSize(file.size),
+          "Last Modified": new Date(file.lastModified).toLocaleString(),
+        }
+    
+        // Display basic metadata
+        let metadataHTML = "<table>"
+    
+        for (const [key, value] of Object.entries(basicMetadata)) {
+          metadataHTML += `<tr><th>${key}</th><td>${value}</td></tr>`
+        }
+    
+        metadataHTML += "</table>"
+        metadataInfo.innerHTML = metadataHTML
+    
+        
+      }
+
 })

@@ -3,3 +3,33 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+:root {
+    /* Vibrant gradient palette */
+    --gradient-primary: linear-gradient(135deg, #6366f1 0%, #3b82f6 100%);
+    --gradient-secondary: linear-gradient(135deg, #0d9488 0%, #0ea5e9 100%);
+    --gradient-accent: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+    --gradient-dark: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  
+    /* Solid colors */
+    --primary: #6366f1;
+    --primary-hover: #4f46e5;
+    --secondary: #0d9488;
+    --accent: #ec4899;
+    --background: #0f172a;
+    --card-bg: #1e293b;
+    --card-bg-light: #334155;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    --border-color: #475569;
+  
+    /* Other variables */
+    --border-radius: 16px;
+    --border-radius-sm: 8px;
+    --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-glow: 0 0 15px rgba(99, 102, 241, 0.5);
+}

@@ -173,4 +173,84 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     })
 
+    // Handle resize button click
+    resizeButton.addEventListener("click", processImage)
+  
+    // Handle focal point selection
+    originalPreview.addEventListener("click", () => {
+      focalPointOverlay.style.display = "block"
+    })
+  
+    focalPointOverlay.addEventListener("click", (e) => {
+      const rect = focalPointOverlay.getBoundingClientRect()
+      focalPointX = (e.clientX - rect.left) / rect.width
+      focalPointY = (e.clientY - rect.top) / rect.height
+  
+      focalPoint.style.left = `${focalPointX * 100}%`
+      focalPoint.style.top = `${focalPointY * 100}%`
+    })
+  
+    // Handle preset saving
+    savePresetBtn.addEventListener("click", () => {
+      presetModal.style.display = "flex"
+    })
+  
+    cancelPresetBtn.addEventListener("click", () => {
+      presetModal.style.display = "none"
+    })
+  
+    confirmPresetBtn.addEventListener("click", savePreset)
+  
+    // Handle batch mode toggle
+    batchModeToggle.addEventListener("change", () => {
+      updateBatchInfo()
+    })
+  
+    // Function to handle image upload
+    function handleImageUpload() {
+      // Add animation class to upload container
+      const uploadContainer = document.getElementById("upload-container")
+      uploadContainer.style.transform = "scale(0.98)"
+      uploadContainer.style.boxShadow = "0 2px 10px rgba(0, 0, 0, 0.03)"
+  
+      setTimeout(() => {
+        uploadContainer.style.transform = ""
+        uploadContainer.style.boxShadow = ""
+      }, 200)
+  
+      const files = imageUpload.files
+  
+      if (!files.length) return
+  
+      // Clear previous batch if any
+      if (!batchModeToggle.checked) {
+        batchImages = []
+      }
+  
+      // Add files to batch array
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i]
+  
+        // Check if file is an image
+        if (!file.type.match("image.*")) continue
+  
+        batchImages.push({
+          file: file,
+          original: null,
+          processed: null,
+          width: 0,
+          height: 0,
+        })
+      }
+  
+      // Update batch info
+      updateBatchInfo()
+  
+      // Load the first image
+      if (batchImages.length > 0) {
+        currentImageIndex = 0
+        loadImageForProcessing(currentImageIndex)
+      }
+    }
+
 })

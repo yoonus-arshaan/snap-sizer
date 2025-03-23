@@ -465,3 +465,24 @@ main {
   .download-icon {
     stroke: white;
   }
+
+  /* Footer styles */
+  footer {
+    text-align: center;
+    padding: 2rem 0 1rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    position: relative;
+  }
+  
+  footer::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 2px;
+    background: var(--gradient-accent);
+    border-radius: 1px;
+  }

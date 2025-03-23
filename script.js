@@ -730,6 +730,132 @@ document.addEventListener("DOMContentLoaded", () => {
         metadataInfo.innerHTML = metadataHTML
     
         
+
+    }
+
+    // Function to save preset
+    function savePreset() {
+        const presetName = presetNameInput.value.trim()
+    
+        if (!presetName) {
+          alert("Please enter a preset name")
+          return
+        }
+    
+        const preset = {
+          name: presetName,
+          width: widthInput.value,
+          quality: qualitySlider.value,
+          aspectRatio: selectedAspectRatio,
+          filter: selectedFilter,
+          format: selectedFormat,
+          brightness: currentEnhanceSettings.brightness,
+          contrast: currentEnhanceSettings.contrast,
+          saturation: currentEnhanceSettings.saturation,
+          preserveMetadata: preserveMetadata.checked,
+        }
+    
+        // Add to presets array
+        presets.push(preset)
+    
+        // Save to localStorage
+        localStorage.setItem("imagePresets", JSON.stringify(presets))
+    
+        // Update presets display
+        updatePresetsDisplay()
+    
+        // Close modal
+        presetModal.style.display = "none"
+        presetNameInput.value = ""
+      }
+    
+      // Function to update presets display
+      function updatePresetsDisplay() {
+        if (presets.length === 0) {
+          presetsContainer.innerHTML = '<p class="no-presets">You haven\'t saved any presets yet</p>'
+          return
+        }
+    
+        let presetsHTML = ""
+    
+        presets.forEach((preset, index) => {
+          presetsHTML += `
+            <div class="preset-item" data-index="${index}">
+              <div class="preset-name">${preset.name}</div>
+              <div class="preset-details">
+                ${preset.width}px · ${preset.quality}% quality · ${preset.format.toUpperCase()}
+              </div>
+            </div>
+          `
+        })
+    
+        presetsContainer.innerHTML = presetsHTML
+    
+        // Add click event to preset items
+        document.querySelectorAll(".preset-item").forEach((item) => {
+          item.addEventListener("click", () => {
+            const index = item.getAttribute("data-index")
+            applyPreset(presets[index])
+          })
+        })
+      }
+    
+      // Function to apply preset
+      function applyPreset(preset) {
+        widthInput.value = preset.width
+        qualitySlider.value = preset.quality
+        qualityValue.textContent = `${preset.quality}%`
+    
+        // Set aspect ratio
+        selectedAspectRatio = preset.aspectRatio
+        aspectButtons.forEach((btn) => {
+          btn.classList.remove("active")
+          if (btn.getAttribute("data-ratio") === preset.aspectRatio) {
+            btn.classList.add("active")
+          }
+        })
+    
+        // Set filter
+        selectedFilter = preset.filter
+        filterButtons.forEach((btn) => {
+          btn.classList.remove("active")
+          if (btn.getAttribute("data-filter") === preset.filter) {
+            btn.classList.add("active")
+          }
+        })
+    
+        // Set format
+        selectedFormat = preset.format
+        formatButtons.forEach((btn) => {
+          btn.classList.remove("active")
+          if (btn.getAttribute("data-format") === preset.format) {
+            btn.classList.add("active")
+          }
+        })
+    
+        // Set enhancement values
+        brightnessSlider.value = preset.brightness
+        brightnessValue.textContent = preset.brightness
+        currentEnhanceSettings.brightness = preset.brightness
+    
+        contrastSlider.value = preset.contrast
+        contrastValue.textContent = preset.contrast
+        currentEnhanceSettings.contrast = preset.contrast
+    
+        saturationSlider.value = preset.saturation
+        saturationValue.textContent = preset.saturation
+        currentEnhanceSettings.saturation = preset.saturation
+    
+        // Set metadata preservation
+        preserveMetadata.checked = preset.preserveMetadata
+    
+        // Switch to appropriate tab
+        tabButtons[0].click()
+    
+        // Process image if one is loaded
+        if (originalImage) {
+          processImage()
+        }
       }
 
 })

@@ -857,4 +857,36 @@ document.addEventListener("DOMContentLoaded", () => {
         processImage()
       }
     }
+
+    // Function to update batch info
+    function updateBatchInfo() {
+        if (batchModeToggle.checked) {
+          batchInfo.textContent = `${batchImages.length} images selected`
+          batchInfo.style.display = "block"
+        } else {
+          batchInfo.style.display = "none"
+        }
+      }
+    
+      // Function to estimate file size from data URL
+      function estimateFileSize(dataUrl) {
+        return new Promise((resolve) => {
+          // For data URLs, we can estimate size by removing the header and calculating base64 size
+          const base64 = dataUrl.split(",")[1]
+          const byteCharacters = atob(base64)
+          const byteSize = byteCharacters.length
+          resolve(byteSize)
+        })
+      }
+    
+      // Function to format file size
+      function formatFileSize(bytes) {
+        if (bytes < 1024) {
+          return bytes + " bytes"
+        } else if (bytes < 1024 * 1024) {
+          return (bytes / 1024).toFixed(2) + " KB"
+        } else {
+          return (bytes / (1024 * 1024)).toFixed(2) + " MB"
+        }
+      }
 })

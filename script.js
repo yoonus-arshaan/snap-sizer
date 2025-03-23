@@ -113,7 +113,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       })
     })
-
+  
     // Handle file upload via input change
     imageUpload.addEventListener("change", handleImageUpload)
   
@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       }
     })
-
+  
     // Handle resize button click
     resizeButton.addEventListener("click", processImage)
   
@@ -252,610 +252,609 @@ document.addEventListener("DOMContentLoaded", () => {
         loadImageForProcessing(currentImageIndex)
       }
     }
-
+  
     // Function to load image for processing
     function loadImageForProcessing(index) {
-        if (index >= batchImages.length) return
-    
-        const imageData = batchImages[index]
-        const file = imageData.file
-    
-        const reader = new FileReader()
-    
-        reader.onload = (e) => {
-          // Create a new image to get dimensions
-          originalImage = new Image()
-          originalImage.crossOrigin = "anonymous" // To avoid CORS issues with canvas
-    
-          originalImage.onload = () => {
-            originalWidth = originalImage.width
-            originalHeight = originalImage.height
-            aspectRatio = originalWidth / originalHeight
-    
-            // Store original image in batch data
-            imageData.original = originalImage
-            imageData.width = originalWidth
-            imageData.height = originalHeight
-    
-            // Set default width input value to original width
-            widthInput.value = originalWidth
-            widthInput.max = originalWidth * 2 // Allow up to 2x upscaling
-    
-            // Display original image
-            originalPreview.src = e.target.result
-            originalInfo.textContent = `Original size: ${originalWidth} × ${originalHeight} pixels | ${formatFileSize(file.size)}`
-    
-            // Reset focal point
-            focalPointX = 0.5
-            focalPointY = 0.5
-            focalPoint.style.left = "50%"
-            focalPoint.style.top = "50%"
-    
-            // Extract and display metadata
-            extractMetadata(file)
-    
-            // Update format comparison
-            updateFormatComparison()
-    
-            // Show controls and preview sections
-            controlsSection.style.display = "block"
-            previewSection.style.display = "block"
-            presetsSection.style.display = "block"
-    
-            // Update presets display
-            updatePresetsDisplay()
-          }
-    
-          originalImage.src = e.target.result
+      if (index >= batchImages.length) return
+  
+      const imageData = batchImages[index]
+      const file = imageData.file
+  
+      const reader = new FileReader()
+  
+      reader.onload = (e) => {
+        // Create a new image to get dimensions
+        originalImage = new Image()
+        originalImage.crossOrigin = "anonymous" // To avoid CORS issues with canvas
+  
+        originalImage.onload = () => {
+          originalWidth = originalImage.width
+          originalHeight = originalImage.height
+          aspectRatio = originalWidth / originalHeight
+  
+          // Store original image in batch data
+          imageData.original = originalImage
+          imageData.width = originalWidth
+          imageData.height = originalHeight
+  
+          // Set default width input value to original width
+          widthInput.value = originalWidth
+          widthInput.max = originalWidth * 2 // Allow up to 2x upscaling
+  
+          // Display original image
+          originalPreview.src = e.target.result
+          originalInfo.textContent = `Original size: ${originalWidth} × ${originalHeight} pixels | ${formatFileSize(file.size)}`
+  
+          // Reset focal point
+          focalPointX = 0.5
+          focalPointY = 0.5
+          focalPoint.style.left = "50%"
+          focalPoint.style.top = "50%"
+  
+          // Extract and display metadata
+          extractMetadata(file)
+  
+          // Update format comparison
+          updateFormatComparison()
+  
+          // Show controls and preview sections
+          controlsSection.style.display = "block"
+          previewSection.style.display = "block"
+          presetsSection.style.display = "block"
+  
+          // Update presets display
+          updatePresetsDisplay()
         }
-    
-        reader.readAsDataURL(file)
+  
+        originalImage.src = e.target.result
       }
-    
-      // Function to update aspect ratio based on selection
-      function updateAspectRatio() {
-        if (!originalImage) return
-    
-        const newWidth = Number.parseInt(widthInput.value)
-        if (!newWidth || newWidth <= 0) return
-    
-        let newHeight
-    
-        switch (selectedAspectRatio) {
-          case "original":
-            newHeight = Math.round(newWidth / aspectRatio)
-            break
-          case "1:1":
-            newHeight = newWidth
-            break
-          case "4:3":
-            newHeight = Math.round(newWidth * (3 / 4))
-            break
-          case "16:9":
-            newHeight = Math.round(newWidth * (9 / 16))
-            break
-          default:
-            newHeight = Math.round(newWidth / aspectRatio)
+  
+      reader.readAsDataURL(file)
+    }
+  
+    // Function to update aspect ratio based on selection
+    function updateAspectRatio() {
+      if (!originalImage) return
+  
+      const newWidth = Number.parseInt(widthInput.value)
+      if (!newWidth || newWidth <= 0) return
+  
+      let newHeight
+  
+      switch (selectedAspectRatio) {
+        case "original":
+          newHeight = Math.round(newWidth / aspectRatio)
+          break
+        case "1:1":
+          newHeight = newWidth
+          break
+        case "4:3":
+          newHeight = Math.round(newWidth * (3 / 4))
+          break
+        case "16:9":
+          newHeight = Math.round(newWidth * (9 / 16))
+          break
+        default:
+          newHeight = Math.round(newWidth / aspectRatio)
+      }
+  
+      // You could display the calculated height here if desired
+    }
+  
+    // Function to apply image enhancements
+    function applyEnhancements() {
+      if (!originalImage) return
+  
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+  
+      canvas.width = originalWidth
+      canvas.height = originalHeight
+  
+      // Draw original image
+      ctx.drawImage(originalImage, 0, 0)
+  
+      // Apply filter
+      switch (selectedFilter) {
+        case "grayscale":
+          applyGrayscale(ctx, canvas.width, canvas.height)
+          break
+        case "sepia":
+          applySepia(ctx, canvas.width, canvas.height)
+          break
+        case "vintage":
+          applyVintage(ctx, canvas.width, canvas.height)
+          break
+        case "clarity":
+          applyClarity(ctx, canvas.width, canvas.height)
+          break
+      }
+  
+      // Apply adjustments
+      if (
+        currentEnhanceSettings.brightness !== 0 ||
+        currentEnhanceSettings.contrast !== 0 ||
+        currentEnhanceSettings.saturation !== 0
+      ) {
+        applyAdjustments(ctx, canvas.width, canvas.height)
+      }
+  
+      // Display enhanced preview
+      resizedPreview.src = canvas.toDataURL("image/jpeg", 0.9)
+    }
+  
+    // Filter functions
+    function applyGrayscale(ctx, width, height) {
+      const imageData = ctx.getImageData(0, 0, width, height)
+      const data = imageData.data
+  
+      for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
+        data[i] = avg // red
+        data[i + 1] = avg // green
+        data[i + 2] = avg // blue
+      }
+  
+      ctx.putImageData(imageData, 0, 0)
+    }
+  
+    function applySepia(ctx, width, height) {
+      const imageData = ctx.getImageData(0, 0, width, height)
+      const data = imageData.data
+  
+      for (let i = 0; i < data.length; i += 4) {
+        const r = data[i]
+        const g = data[i + 1]
+        const b = data[i + 2]
+  
+        data[i] = Math.min(255, r * 0.393 + g * 0.769 + b * 0.189)
+        data[i + 1] = Math.min(255, r * 0.349 + g * 0.686 + b * 0.168)
+        data[i + 2] = Math.min(255, r * 0.272 + g * 0.534 + b * 0.131)
+      }
+  
+      ctx.putImageData(imageData, 0, 0)
+    }
+  
+    function applyVintage(ctx, width, height) {
+      // First apply sepia
+      applySepia(ctx, width, height)
+  
+      // Then add a slight blue tint to shadows
+      const imageData = ctx.getImageData(0, 0, width, height)
+      const data = imageData.data
+  
+      for (let i = 0; i < data.length; i += 4) {
+        // Add blue to darker areas
+        if (data[i] < 150) {
+          data[i + 2] = Math.min(255, data[i + 2] + 20)
         }
-    
-        // You could display the calculated height here if desired
+  
+        // Reduce contrast slightly
+        data[i] = 0.9 * data[i] + 15
+        data[i + 1] = 0.9 * data[i + 1] + 15
+        data[i + 2] = 0.9 * data[i + 2] + 15
       }
-    
-      // Function to apply image enhancements
-      function applyEnhancements() {
-        if (!originalImage) return
-    
-        const canvas = document.createElement("canvas")
-        const ctx = canvas.getContext("2d")
-    
-        canvas.width = originalWidth
-        canvas.height = originalHeight
-    
-        // Draw original image
-        ctx.drawImage(originalImage, 0, 0)
-    
+  
+      ctx.putImageData(imageData, 0, 0)
+  
+      // Add a slight vignette effect
+      ctx.fillStyle = "rgba(0, 0, 0, 0.2)"
+      ctx.fillRect(0, 0, width, height)
+  
+      // Clear center
+      const gradient = ctx.createRadialGradient(
+        width / 2,
+        height / 2,
+        0,
+        width / 2,
+        height / 2,
+        Math.max(width, height) / 1.5,
+      )
+      gradient.addColorStop(0, "rgba(0, 0, 0, 1)")
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
+  
+      ctx.fillStyle = gradient
+      ctx.globalCompositeOperation = "destination-out"
+      ctx.fillRect(0, 0, width, height)
+      ctx.globalCompositeOperation = "source-over"
+    }
+  
+    function applyClarity(ctx, width, height) {
+      // Apply unsharp masking for clarity
+      const imageData = ctx.getImageData(0, 0, width, height)
+      const data = imageData.data
+  
+      // Create a blurred version
+      const tempCanvas = document.createElement("canvas")
+      tempCanvas.width = width
+      tempCanvas.height = height
+      const tempCtx = tempCanvas.getContext("2d")
+  
+      tempCtx.drawImage(ctx.canvas, 0, 0)
+      tempCtx.filter = "blur(2px)"
+      tempCtx.drawImage(tempCanvas, 0, 0)
+  
+      const blurredData = tempCtx.getImageData(0, 0, width, height).data
+  
+      // Apply unsharp mask
+      const amount = 0.6 // Strength of the effect
+  
+      for (let i = 0; i < data.length; i += 4) {
+        data[i] = Math.min(255, data[i] + (data[i] - blurredData[i]) * amount)
+        data[i + 1] = Math.min(255, data[i + 1] + (data[i + 1] - blurredData[i + 1]) * amount)
+        data[i + 2] = Math.min(255, data[i + 2] + (data[i + 2] - blurredData[i + 2]) * amount)
+      }
+  
+      ctx.putImageData(imageData, 0, 0)
+  
+      // Increase contrast slightly
+      const contrastFactor = 1.2
+      const contrastAdjust = 128 * (1 - contrastFactor)
+  
+      const contrastData = ctx.getImageData(0, 0, width, height)
+      const contrastPixels = contrastData.data
+  
+      for (let i = 0; i < contrastPixels.length; i += 4) {
+        contrastPixels[i] = contrastFactor * contrastPixels[i] + contrastAdjust
+        contrastPixels[i + 1] = contrastFactor * contrastPixels[i + 1] + contrastAdjust
+        contrastPixels[i + 2] = contrastFactor * contrastPixels[i + 2] + contrastAdjust
+      }
+  
+      ctx.putImageData(contrastData, 0, 0)
+    }
+  
+    function applyAdjustments(ctx, width, height) {
+      const imageData = ctx.getImageData(0, 0, width, height)
+      const data = imageData.data
+  
+      // Convert adjustment values to factors
+      const brightnessAdjust = currentEnhanceSettings.brightness / 100
+      const contrastAdjust = 1 + currentEnhanceSettings.contrast / 100
+      const saturationAdjust = 1 + currentEnhanceSettings.saturation / 100
+  
+      for (let i = 0; i < data.length; i += 4) {
+        // Apply brightness
+        data[i] = data[i] + 255 * brightnessAdjust
+        data[i + 1] = data[i + 1] + 255 * brightnessAdjust
+        data[i + 2] = data[i + 2] + 255 * brightnessAdjust
+  
+        // Apply contrast
+        data[i] = (data[i] - 128) * contrastAdjust + 128
+        data[i + 1] = (data[i + 1] - 128) * contrastAdjust + 128
+        data[i + 2] = (data[i + 2] - 128) * contrastAdjust + 128
+  
+        // Apply saturation
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
+        data[i] = avg + (data[i] - avg) * saturationAdjust
+        data[i + 1] = avg + (data[i + 1] - avg) * saturationAdjust
+        data[i + 2] = avg + (data[i + 2] - avg) * saturationAdjust
+  
+        // Ensure values are in valid range
+        data[i] = Math.max(0, Math.min(255, data[i]))
+        data[i + 1] = Math.max(0, Math.min(255, data[i + 1]))
+        data[i + 2] = Math.max(0, Math.min(255, data[i + 2]))
+      }
+  
+      ctx.putImageData(imageData, 0, 0)
+    }
+  
+    // Function to process image (resize and optimize)
+    function processImage() {
+      if (!originalImage) {
+        alert("Please upload an image first")
+        return
+      }
+  
+      const newWidth = Number.parseInt(widthInput.value)
+  
+      if (!newWidth || newWidth <= 0) {
+        alert("Please enter a valid width")
+        return
+      }
+  
+      // Calculate new height based on selected aspect ratio
+      let newHeight
+  
+      switch (selectedAspectRatio) {
+        case "original":
+          newHeight = Math.round(newWidth / aspectRatio)
+          break
+        case "1:1":
+          newHeight = newWidth
+          break
+        case "4:3":
+          newHeight = Math.round(newWidth * (3 / 4))
+          break
+        case "16:9":
+          newHeight = Math.round(newWidth * (9 / 16))
+          break
+        default:
+          newHeight = Math.round(newWidth / aspectRatio)
+      }
+  
+      // Create canvas for resizing
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+  
+      // Set canvas dimensions
+      canvas.width = newWidth
+      canvas.height = newHeight
+  
+      // Calculate source dimensions for cropping based on focal point
+      let sourceX, sourceY, sourceWidth, sourceHeight
+  
+      if (selectedAspectRatio !== "original") {
+        const targetRatio = newWidth / newHeight
+  
+        if (aspectRatio > targetRatio) {
+          // Original is wider than target
+          sourceHeight = originalHeight
+          sourceWidth = originalHeight * targetRatio
+          sourceY = 0
+          sourceX = (originalWidth - sourceWidth) * focalPointX
+        } else {
+          // Original is taller than target
+          sourceWidth = originalWidth
+          sourceHeight = originalWidth / targetRatio
+          sourceX = 0
+          sourceY = (originalHeight - sourceHeight) * focalPointY
+        }
+      } else {
+        // Use entire image
+        sourceX = 0
+        sourceY = 0
+        sourceWidth = originalWidth
+        sourceHeight = originalHeight
+      }
+  
+      // Draw resized image on canvas
+      ctx.drawImage(originalImage, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, newWidth, newHeight)
+  
+      // Apply enhancements
+      if (
+        selectedFilter !== "none" ||
+        currentEnhanceSettings.brightness !== 0 ||
+        currentEnhanceSettings.contrast !== 0 ||
+        currentEnhanceSettings.saturation !== 0
+      ) {
         // Apply filter
         switch (selectedFilter) {
           case "grayscale":
-            applyGrayscale(ctx, canvas.width, canvas.height)
+            applyGrayscale(ctx, newWidth, newHeight)
             break
           case "sepia":
-            applySepia(ctx, canvas.width, canvas.height)
+            applySepia(ctx, newWidth, newHeight)
             break
           case "vintage":
-            applyVintage(ctx, canvas.width, canvas.height)
+            applyVintage(ctx, newWidth, newHeight)
             break
           case "clarity":
-            applyClarity(ctx, canvas.width, canvas.height)
+            applyClarity(ctx, newWidth, newHeight)
             break
         }
-    
+  
         // Apply adjustments
         if (
           currentEnhanceSettings.brightness !== 0 ||
           currentEnhanceSettings.contrast !== 0 ||
           currentEnhanceSettings.saturation !== 0
         ) {
-          applyAdjustments(ctx, canvas.width, canvas.height)
+          applyAdjustments(ctx, newWidth, newHeight)
         }
-    
-        // Display enhanced preview
-        resizedPreview.src = canvas.toDataURL("image/jpeg", 0.9)
       }
-    
-      // Filter functions
-      function applyGrayscale(ctx, width, height) {
-        const imageData = ctx.getImageData(0, 0, width, height)
-        const data = imageData.data
-    
-        for (let i = 0; i < data.length; i += 4) {
-          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
-          data[i] = avg // red
-          data[i + 1] = avg // green
-          data[i + 2] = avg // blue
-        }
-    
-        ctx.putImageData(imageData, 0, 0)
+  
+      // Get quality value (0-1)
+      const quality = Number.parseInt(qualitySlider.value) / 100
+  
+      // Convert canvas to data URL with specified quality and format
+      let mimeType
+      switch (selectedFormat) {
+        case "png":
+          mimeType = "image/png"
+          break
+        case "webp":
+          mimeType = "image/webp"
+          break
+        default:
+          mimeType = "image/jpeg"
       }
-    
-      function applySepia(ctx, width, height) {
-        const imageData = ctx.getImageData(0, 0, width, height)
-        const data = imageData.data
-    
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i]
-          const g = data[i + 1]
-          const b = data[i + 2]
-    
-          data[i] = Math.min(255, r * 0.393 + g * 0.769 + b * 0.189)
-          data[i + 1] = Math.min(255, r * 0.349 + g * 0.686 + b * 0.168)
-          data[i + 2] = Math.min(255, r * 0.272 + g * 0.534 + b * 0.131)
-        }
-    
-        ctx.putImageData(imageData, 0, 0)
+  
+      const resizedDataUrl = canvas.toDataURL(mimeType, quality)
+  
+      // Display resized image
+      resizedPreview.src = resizedDataUrl
+  
+      // Update download link
+      downloadLink.href = resizedDataUrl
+      downloadLink.download = `optimized-image.${selectedFormat}`
+  
+      // Store processed image in batch data if in batch mode
+      if (batchModeToggle.checked && currentImageIndex < batchImages.length) {
+        batchImages[currentImageIndex].processed = resizedDataUrl
       }
-    
-      function applyVintage(ctx, width, height) {
-        // First apply sepia
-        applySepia(ctx, width, height)
-    
-        // Then add a slight blue tint to shadows
-        const imageData = ctx.getImageData(0, 0, width, height)
-        const data = imageData.data
-    
-        for (let i = 0; i < data.length; i += 4) {
-          // Add blue to darker areas
-          if (data[i] < 150) {
-            data[i + 2] = Math.min(255, data[i + 2] + 20)
-          }
-    
-          // Reduce contrast slightly
-          data[i] = 0.9 * data[i] + 15
-          data[i + 1] = 0.9 * data[i + 1] + 15
-          data[i + 2] = 0.9 * data[i + 2] + 15
-        }
-    
-        ctx.putImageData(imageData, 0, 0)
-    
-        // Add a slight vignette effect
-        ctx.fillStyle = "rgba(0, 0, 0, 0.2)"
-        ctx.fillRect(0, 0, width, height)
-    
-        // Clear center
-        const gradient = ctx.createRadialGradient(
-          width / 2,
-          height / 2,
-          0,
-          width / 2,
-          height / 2,
-          Math.max(width, height) / 1.5,
-        )
-        gradient.addColorStop(0, "rgba(0, 0, 0, 1)")
-        gradient.addColorStop(1, "rgba(0, 0, 0, 0)")
-    
-        ctx.fillStyle = gradient
-        ctx.globalCompositeOperation = "destination-out"
-        ctx.fillRect(0, 0, width, height)
-        ctx.globalCompositeOperation = "source-over"
-      }
-    
-      function applyClarity(ctx, width, height) {
-        // Apply unsharp masking for clarity
-        const imageData = ctx.getImageData(0, 0, width, height)
-        const data = imageData.data
-    
-        // Create a blurred version
-        const tempCanvas = document.createElement("canvas")
-        tempCanvas.width = width
-        tempCanvas.height = height
-        const tempCtx = tempCanvas.getContext("2d")
-    
-        tempCtx.drawImage(ctx.canvas, 0, 0)
-        tempCtx.filter = "blur(2px)"
-        tempCtx.drawImage(tempCanvas, 0, 0)
-    
-        const blurredData = tempCtx.getImageData(0, 0, width, height).data
-    
-        // Apply unsharp mask
-        const amount = 0.6 // Strength of the effect
-    
-        for (let i = 0; i < data.length; i += 4) {
-          data[i] = Math.min(255, data[i] + (data[i] - blurredData[i]) * amount)
-          data[i + 1] = Math.min(255, data[i + 1] + (data[i + 1] - blurredData[i + 1]) * amount)
-          data[i + 2] = Math.min(255, data[i + 2] + (data[i + 2] - blurredData[i + 2]) * amount)
-        }
-    
-        ctx.putImageData(imageData, 0, 0)
-    
-        // Increase contrast slightly
-        const contrastFactor = 1.2
-        const contrastAdjust = 128 * (1 - contrastFactor)
-    
-        const contrastData = ctx.getImageData(0, 0, width, height)
-        const contrastPixels = contrastData.data
-    
-        for (let i = 0; i < contrastPixels.length; i += 4) {
-          contrastPixels[i] = contrastFactor * contrastPixels[i] + contrastAdjust
-          contrastPixels[i + 1] = contrastFactor * contrastPixels[i + 1] + contrastAdjust
-          contrastPixels[i + 2] = contrastFactor * contrastPixels[i + 2] + contrastAdjust
-        }
-    
-        ctx.putImageData(contrastData, 0, 0)
-      }
-    
-      function applyAdjustments(ctx, width, height) {
-        const imageData = ctx.getImageData(0, 0, width, height)
-        const data = imageData.data
-    
-        // Convert adjustment values to factors
-        const brightnessAdjust = currentEnhanceSettings.brightness / 100
-        const contrastAdjust = 1 + currentEnhanceSettings.contrast / 100
-        const saturationAdjust = 1 + currentEnhanceSettings.saturation / 100
-    
-        for (let i = 0; i < data.length; i += 4) {
-          // Apply brightness
-          data[i] = data[i] + 255 * brightnessAdjust
-          data[i + 1] = data[i + 1] + 255 * brightnessAdjust
-          data[i + 2] = data[i + 2] + 255 * brightnessAdjust
-    
-          // Apply contrast
-          data[i] = (data[i] - 128) * contrastAdjust + 128
-          data[i + 1] = (data[i + 1] - 128) * contrastAdjust + 128
-          data[i + 2] = (data[i + 2] - 128) * contrastAdjust + 128
-    
-          // Apply saturation
-          const avg = (data[i] + data[i + 1] + data[i + 2]) / 3
-          data[i] = avg + (data[i] - avg) * saturationAdjust
-          data[i + 1] = avg + (data[i + 1] - avg) * saturationAdjust
-          data[i + 2] = avg + (data[i + 2] - avg) * saturationAdjust
-    
-          // Ensure values are in valid range
-          data[i] = Math.max(0, Math.min(255, data[i]))
-          data[i + 1] = Math.max(0, Math.min(255, data[i + 1]))
-          data[i + 2] = Math.max(0, Math.min(255, data[i + 2]))
-        }
-    
-        ctx.putImageData(imageData, 0, 0)
-      }
-    
-      // Function to process image (resize and optimize)
-      function processImage() {
-        if (!originalImage) {
-          alert("Please upload an image first")
-          return
-        }
-    
-        const newWidth = Number.parseInt(widthInput.value)
-    
-        if (!newWidth || newWidth <= 0) {
-          alert("Please enter a valid width")
-          return
-        }
-    
-        // Calculate new height based on selected aspect ratio
-        let newHeight
-    
-        switch (selectedAspectRatio) {
-          case "original":
-            newHeight = Math.round(newWidth / aspectRatio)
-            break
-          case "1:1":
-            newHeight = newWidth
-            break
-          case "4:3":
-            newHeight = Math.round(newWidth * (3 / 4))
-            break
-          case "16:9":
-            newHeight = Math.round(newWidth * (9 / 16))
-            break
-          default:
-            newHeight = Math.round(newWidth / aspectRatio)
-        }
-    
-        // Create canvas for resizing
-        const canvas = document.createElement("canvas")
-        const ctx = canvas.getContext("2d")
-    
-        // Set canvas dimensions
-        canvas.width = newWidth
-        canvas.height = newHeight
-    
-        // Calculate source dimensions for cropping based on focal point
-        let sourceX, sourceY, sourceWidth, sourceHeight
-    
-        if (selectedAspectRatio !== "original") {
-          const targetRatio = newWidth / newHeight
-    
-          if (aspectRatio > targetRatio) {
-            // Original is wider than target
-            sourceHeight = originalHeight
-            sourceWidth = originalHeight * targetRatio
-            sourceY = 0
-            sourceX = (originalWidth - sourceWidth) * focalPointX
-          } else {
-            // Original is taller than target
-            sourceWidth = originalWidth
-            sourceHeight = originalWidth / targetRatio
-            sourceX = 0
-            sourceY = (originalHeight - sourceHeight) * focalPointY
-          }
-        } else {
-          // Use entire image
-          sourceX = 0
-          sourceY = 0
-          sourceWidth = originalWidth
-          sourceHeight = originalHeight
-        }
-    
-        // Draw resized image on canvas
-        ctx.drawImage(originalImage, sourceX, sourceY, sourceWidth, sourceHeight, 0, 0, newWidth, newHeight)
-    
-        // Apply enhancements
-        if (
-          selectedFilter !== "none" ||
-          currentEnhanceSettings.brightness !== 0 ||
-          currentEnhanceSettings.contrast !== 0 ||
-          currentEnhanceSettings.saturation !== 0
-        ) {
-          // Apply filter
-          switch (selectedFilter) {
-            case "grayscale":
-              applyGrayscale(ctx, newWidth, newHeight)
-              break
-            case "sepia":
-              applySepia(ctx, newWidth, newHeight)
-              break
-            case "vintage":
-              applyVintage(ctx, newWidth, newHeight)
-              break
-            case "clarity":
-              applyClarity(ctx, newWidth, newHeight)
-              break
-          }
-    
-          // Apply adjustments
-          if (
-            currentEnhanceSettings.brightness !== 0 ||
-            currentEnhanceSettings.contrast !== 0 ||
-            currentEnhanceSettings.saturation !== 0
-          ) {
-            applyAdjustments(ctx, newWidth, newHeight)
-          }
-        }
-    
-        // Get quality value (0-1)
-        const quality = Number.parseInt(qualitySlider.value) / 100
-    
-        // Convert canvas to data URL with specified quality and format
-        let mimeType
-        switch (selectedFormat) {
-          case "png":
-            mimeType = "image/png"
-            break
-          case "webp":
-            mimeType = "image/webp"
-            break
-          default:
-            mimeType = "image/jpeg"
-        }
-    
-        const resizedDataUrl = canvas.toDataURL(mimeType, quality)
-    
-        // Display resized image
-        resizedPreview.src = resizedDataUrl
-    
-        // Update download link
-        downloadLink.href = resizedDataUrl
-        downloadLink.download = `optimized-image.${selectedFormat}`
-    
-        // Store processed image in batch data if in batch mode
-        if (batchModeToggle.checked && currentImageIndex < batchImages.length) {
-          batchImages[currentImageIndex].processed = resizedDataUrl
-        }
-    
-        // Estimate file size (this is approximate)
-        estimateFileSize(resizedDataUrl).then((size) => {
-          resizedInfo.textContent = `Resized: ${newWidth} × ${newHeight} pixels | Approx. ${formatFileSize(size)}`
-        })
-      }
-    
-      // Function to update format comparison
-      function updateFormatComparison() {
-        if (!originalImage) return
-    
-        const canvas = document.createElement("canvas")
-        const ctx = canvas.getContext("2d")
-    
-        canvas.width = originalWidth
-        canvas.height = originalHeight
-    
-        ctx.drawImage(originalImage, 0, 0)
-    
-        // Get quality value
-        const quality = Number.parseInt(qualitySlider.value) / 100
-    
-        // Generate different formats
-        const jpegSize = estimateFileSize(canvas.toDataURL("image/jpeg", quality))
-        const pngSize = estimateFileSize(canvas.toDataURL("image/png"))
-        const webpSize = estimateFileSize(canvas.toDataURL("image/webp", quality))
-    
-        // Update size displays
-        Promise.all([jpegSize, pngSize, webpSize]).then((sizes) => {
-          document.getElementById("jpeg-size").textContent = formatFileSize(sizes[0])
-          document.getElementById("png-size").textContent = formatFileSize(sizes[1])
-          document.getElementById("webp-size").textContent = formatFileSize(sizes[2])
-        })
-      }
-
+  
+      // Estimate file size (this is approximate)
+      estimateFileSize(resizedDataUrl).then((size) => {
+        resizedInfo.textContent = `Resized: ${newWidth} × ${newHeight} pixels | Approx. ${formatFileSize(size)}`
+      })
+    }
+  
+    // Function to update format comparison
+    function updateFormatComparison() {
+      if (!originalImage) return
+  
+      const canvas = document.createElement("canvas")
+      const ctx = canvas.getContext("2d")
+  
+      canvas.width = originalWidth
+      canvas.height = originalHeight
+  
+      ctx.drawImage(originalImage, 0, 0)
+  
+      // Get quality value
+      const quality = Number.parseInt(qualitySlider.value) / 100
+  
+      // Generate different formats
+      const jpegSize = estimateFileSize(canvas.toDataURL("image/jpeg", quality))
+      const pngSize = estimateFileSize(canvas.toDataURL("image/png"))
+      const webpSize = estimateFileSize(canvas.toDataURL("image/webp", quality))
+  
+      // Update size displays
+      Promise.all([jpegSize, pngSize, webpSize]).then((sizes) => {
+        document.getElementById("jpeg-size").textContent = formatFileSize(sizes[0])
+        document.getElementById("png-size").textContent = formatFileSize(sizes[1])
+        document.getElementById("webp-size").textContent = formatFileSize(sizes[2])
+      })
+    }
+  
     // Function to extract metadata
     function extractMetadata(file) {
-        if (!file) return
-    
-        // Basic file metadata
-        const basicMetadata = {
-          "File Name": file.name,
-          "File Type": file.type,
-          "File Size": formatFileSize(file.size),
-          "Last Modified": new Date(file.lastModified).toLocaleString(),
-        }
-    
-        // Display basic metadata
-        let metadataHTML = "<table>"
-    
-        for (const [key, value] of Object.entries(basicMetadata)) {
-          metadataHTML += `<tr><th>${key}</th><td>${value}</td></tr>`
-        }
-    
-        metadataHTML += "</table>"
-        metadataInfo.innerHTML = metadataHTML
-    
-        
-
+      if (!file) return
+  
+      // Basic file metadata
+      const basicMetadata = {
+        "File Name": file.name,
+        "File Type": file.type,
+        "File Size": formatFileSize(file.size),
+        "Last Modified": new Date(file.lastModified).toLocaleString(),
+      }
+  
+      // Display basic metadata
+      let metadataHTML = "<table>"
+  
+      for (const [key, value] of Object.entries(basicMetadata)) {
+        metadataHTML += `<tr><th>${key}</th><td>${value}</td></tr>`
+      }
+  
+      metadataHTML += "</table>"
+      metadataInfo.innerHTML = metadataHTML
+  
+      // For more advanced EXIF data, you would need a library like exif-js
+      // This is a simplified version
     }
-
+  
     // Function to save preset
     function savePreset() {
-        const presetName = presetNameInput.value.trim()
-    
-        if (!presetName) {
-          alert("Please enter a preset name")
-          return
-        }
-    
-        const preset = {
-          name: presetName,
-          width: widthInput.value,
-          quality: qualitySlider.value,
-          aspectRatio: selectedAspectRatio,
-          filter: selectedFilter,
-          format: selectedFormat,
-          brightness: currentEnhanceSettings.brightness,
-          contrast: currentEnhanceSettings.contrast,
-          saturation: currentEnhanceSettings.saturation,
-          preserveMetadata: preserveMetadata.checked,
-        }
-    
-        // Add to presets array
-        presets.push(preset)
-    
-        // Save to localStorage
-        localStorage.setItem("imagePresets", JSON.stringify(presets))
-    
-        // Update presets display
-        updatePresetsDisplay()
-    
-        // Close modal
-        presetModal.style.display = "none"
-        presetNameInput.value = ""
+      const presetName = presetNameInput.value.trim()
+  
+      if (!presetName) {
+        alert("Please enter a preset name")
+        return
       }
-    
-      // Function to update presets display
-      function updatePresetsDisplay() {
-        if (presets.length === 0) {
-          presetsContainer.innerHTML = '<p class="no-presets">You haven\'t saved any presets yet</p>'
-          return
-        }
-    
-        let presetsHTML = ""
-    
-        presets.forEach((preset, index) => {
-          presetsHTML += `
-            <div class="preset-item" data-index="${index}">
-              <div class="preset-name">${preset.name}</div>
-              <div class="preset-details">
-                ${preset.width}px · ${preset.quality}% quality · ${preset.format.toUpperCase()}
-              </div>
+  
+      const preset = {
+        name: presetName,
+        width: widthInput.value,
+        quality: qualitySlider.value,
+        aspectRatio: selectedAspectRatio,
+        filter: selectedFilter,
+        format: selectedFormat,
+        brightness: currentEnhanceSettings.brightness,
+        contrast: currentEnhanceSettings.contrast,
+        saturation: currentEnhanceSettings.saturation,
+        preserveMetadata: preserveMetadata.checked,
+      }
+  
+      // Add to presets array
+      presets.push(preset)
+  
+      // Save to localStorage
+      localStorage.setItem("imagePresets", JSON.stringify(presets))
+  
+      // Update presets display
+      updatePresetsDisplay()
+  
+      // Close modal
+      presetModal.style.display = "none"
+      presetNameInput.value = ""
+    }
+  
+    // Function to update presets display
+    function updatePresetsDisplay() {
+      if (presets.length === 0) {
+        presetsContainer.innerHTML = '<p class="no-presets">You haven\'t saved any presets yet</p>'
+        return
+      }
+  
+      let presetsHTML = ""
+  
+      presets.forEach((preset, index) => {
+        presetsHTML += `
+          <div class="preset-item" data-index="${index}">
+            <div class="preset-name">${preset.name}</div>
+            <div class="preset-details">
+              ${preset.width}px · ${preset.quality}% quality · ${preset.format.toUpperCase()}
             </div>
-          `
+          </div>
+        `
+      })
+  
+      presetsContainer.innerHTML = presetsHTML
+  
+      // Add click event to preset items
+      document.querySelectorAll(".preset-item").forEach((item) => {
+        item.addEventListener("click", () => {
+          const index = item.getAttribute("data-index")
+          applyPreset(presets[index])
         })
-    
-        presetsContainer.innerHTML = presetsHTML
-    
-        // Add click event to preset items
-        document.querySelectorAll(".preset-item").forEach((item) => {
-          item.addEventListener("click", () => {
-            const index = item.getAttribute("data-index")
-            applyPreset(presets[index])
-          })
-        })
-      }
-    
-      // Function to apply preset
-      function applyPreset(preset) {
-        widthInput.value = preset.width
-        qualitySlider.value = preset.quality
-        qualityValue.textContent = `${preset.quality}%`
-    
-        // Set aspect ratio
-        selectedAspectRatio = preset.aspectRatio
-        aspectButtons.forEach((btn) => {
-          btn.classList.remove("active")
-          if (btn.getAttribute("data-ratio") === preset.aspectRatio) {
-            btn.classList.add("active")
-          }
-        })
-    
-        // Set filter
-        selectedFilter = preset.filter
-        filterButtons.forEach((btn) => {
-          btn.classList.remove("active")
-          if (btn.getAttribute("data-filter") === preset.filter) {
-            btn.classList.add("active")
-          }
-        })
-    
-        // Set format
-        selectedFormat = preset.format
-        formatButtons.forEach((btn) => {
-          btn.classList.remove("active")
-          if (btn.getAttribute("data-format") === preset.format) {
-            btn.classList.add("active")
-          }
-        })
-    
-        // Set enhancement values
-        brightnessSlider.value = preset.brightness
-        brightnessValue.textContent = preset.brightness
-        currentEnhanceSettings.brightness = preset.brightness
-    
-        contrastSlider.value = preset.contrast
-        contrastValue.textContent = preset.contrast
-        currentEnhanceSettings.contrast = preset.contrast
-    
-        saturationSlider.value = preset.saturation
-        saturationValue.textContent = preset.saturation
-        currentEnhanceSettings.saturation = preset.saturation
-    
-        // Set metadata preservation
-        preserveMetadata.checked = preset.preserveMetadata
-    
-        // Switch to appropriate tab
-        tabButtons[0].click()
-    
-        // Process image if one is loaded
-        if (originalImage) {
-          processImage()
+      })
+    }
+  
+    // Function to apply preset
+    function applyPreset(preset) {
+      widthInput.value = preset.width
+      qualitySlider.value = preset.quality
+      qualityValue.textContent = `${preset.quality}%`
+  
+      // Set aspect ratio
+      selectedAspectRatio = preset.aspectRatio
+      aspectButtons.forEach((btn) => {
+        btn.classList.remove("active")
+        if (btn.getAttribute("data-ratio") === preset.aspectRatio) {
+          btn.classList.add("active")
         }
+      })
+  
+      // Set filter
+      selectedFilter = preset.filter
+      filterButtons.forEach((btn) => {
+        btn.classList.remove("active")
+        if (btn.getAttribute("data-filter") === preset.filter) {
+          btn.classList.add("active")
+        }
+      })
+  
+      // Set format
+      selectedFormat = preset.format
+      formatButtons.forEach((btn) => {
+        btn.classList.remove("active")
+        if (btn.getAttribute("data-format") === preset.format) {
+          btn.classList.add("active")
+        }
+      })
+  
+      // Set enhancement values
+      brightnessSlider.value = preset.brightness
+      brightnessValue.textContent = preset.brightness
+      currentEnhanceSettings.brightness = preset.brightness
+  
+      contrastSlider.value = preset.contrast
+      contrastValue.textContent = preset.contrast
+      currentEnhanceSettings.contrast = preset.contrast
+  
+      saturationSlider.value = preset.saturation
+      saturationValue.textContent = preset.saturation
+      currentEnhanceSettings.saturation = preset.saturation
+  
+      // Set metadata preservation
+      preserveMetadata.checked = preset.preserveMetadata
+  
+      // Switch to appropriate tab
+      tabButtons[0].click()
+  
+      // Process image if one is loaded
+      if (originalImage) {
+        processImage()
       }
-
+    }
 })

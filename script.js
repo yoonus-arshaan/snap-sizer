@@ -37,4 +37,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const aspectButtons = document.querySelectorAll(".aspect-button")
     const filterButtons = document.querySelectorAll(".filter-button")
     const formatButtons = document.querySelectorAll(".format-button")
+
+    // Variables to store image data
+    let originalImage = null
+    let originalWidth = 0
+    let originalHeight = 0
+    let aspectRatio = 0
+    let selectedAspectRatio = "original"
+    let selectedFilter = "none"
+    let selectedFormat = "jpeg"
+    let focalPointX = 0.5
+    let focalPointY = 0.5
+    let batchImages = []
+    let currentImageIndex = 0
+    const presets = JSON.parse(localStorage.getItem("imagePresets")) || []
+    const currentEnhanceSettings = {
+      brightness: 0,
+      contrast: 0,
+      saturation: 0,
+    }
 })
